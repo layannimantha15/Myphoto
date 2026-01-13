@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: rgb(255, 0, 0);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        #logo {
+            width: 150px;
+            height: auto;
+            margin-bottom: 30px;
+        }
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 400px;
+        }
+        form {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            width: 150%;
+            box-sizing: border-box;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ffffff;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        #snap {
+            background: #ffffff;
+            color: #000;
+            border: 2px solid #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 150%;
+            box-sizing: border-box;
+        }
+        #snap:hover {
+            background: #000;
+            color: #fff;
+        }
+        #video, #canvas {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <img id="logo" src=".\photo\3.png" alt="" style="width:px; height: px;">
+    
+    <div id="container">
+        <form id="userForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="Enter Username" required>
+            
+            <label for="msps">MSPS:</label>
+            <input type="text" id="msps" name="msps" placeholder="Enter MSPS details" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter Email" required>
+        </form><br>
+
+        <button id="snap">Save</button>
+        
+        <video id="video" width="320" height="240" autoplay></video>
+        <canvas id="canvas" width="320" height="240"></canvas>
+    </div>
+
+<script>
+var video = document.getElementById('video');
+navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+    .then(function(stream) { video.srcObject = stream; });
+
+document.getElementById('snap').addEventListener('click', function() {
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+    context.drawImage(video, 0, 0, 320, 240);
+    
+    var username = document.getElementById('username').value;
+    var msps = document.getElementById('msps').value;
+    var email = document.getElementById('email').value;
+    
+    // Save IMAGE as PNG
+    var imageLink = document.createElement('a');
+    imageLink.download = `${username}_photo_${Date.now()}.png`;
+    imageLink.href = canvas.toDataURL('image/png');
+    imageLink.click();
+    
+    // Save DATA as TXT file
+    var textData = `Username: ${username}\nMSPs: ${msps}\nEmail: ${email}\nDate: ${new Date().toLocaleString()}\n---\n`;
+    var textBlob = new Blob([textData], {type: 'text/plain'});
+    var textLink = document.createElement('a');
+    textLink.download = `${username}_data_${Date.now()}.txt`;
+    textLink.href = URL.createObjectURL(textBlob);
+    textLink.click();
+    
+    // Clear form
+    document.getElementById('userForm').reset();
+    alert('Thank You for the Submition!');
+});
+</script>
+</body>
+</html>
